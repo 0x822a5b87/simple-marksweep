@@ -73,13 +73,18 @@ void test2()
 
 	vm_instance.del(6);
 	vm_instance.gc();
+	// vm_instance[6] should be collect
 	assert(vm_instance.currentNumOfObjects == 7);
 	assert(vm_instance.stack[6] == nullptr);
 
 	vm_instance.del(2);
 	vm_instance.del(3);
 	vm_instance.gc();
-	assert(vm_instance.currentNumOfObjects == 5);
+	// vm_instance[7] still contains a reference to vm_instance[2] and vm_instance[3], so currentNumOfObjects still 6
+	assert(vm_instance.currentNumOfObjects == 7);
+
+	vm_instance.del(7);
+	assert(vm_instance.currentNumOfObjects == 4);
 }
 
 int main(int argc, char **argv)

@@ -23,6 +23,7 @@ public:
 
 	virtual ~Object();
 
+	int                     count;
 	ObjectType              type;
 	bool                    marked;
 	std::shared_ptr<Object> next;

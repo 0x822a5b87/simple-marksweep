@@ -26,7 +26,7 @@ std::shared_ptr<Object> vm::push(std::shared_ptr<Object> obj)
 {
 	require(this->sp < STACK_MAX, std::string("stack overflow"));
 	this->stack[this->sp++] = std::move(obj);
-	return this->stack[this->sp];
+	return this->stack[this->sp - 1];
 }
 
 std::shared_ptr<Object> vm::pushPrimitive(int value)
@@ -36,11 +36,13 @@ std::shared_ptr<Object> vm::pushPrimitive(int value)
 	return push(object);
 }
 
-std::shared_ptr<Object> vm::pushPair(std::shared_ptr<Object> tail, std::shared_ptr<Object> head)
+std::shared_ptr<Object> vm::pushPair(const std::shared_ptr<Object>& tail, const std::shared_ptr<Object>& head)
 {
 	auto object = newObject(ObjectType::REFERENCE);
-	object->tail = std::move(tail);
-	object->head = std::move(head);
+	object->tail = tail;
+	tail->count++;
+	object->head = head;
+	head->count++;
 	push(object);
 	return object;
 }
@@ -53,6 +55,7 @@ std::shared_ptr<Object> vm::newObject(ObjectType objectType)
 	}
 
 	auto obj = std::shared_ptr<Object>(new Object{});
+	obj->count = 1;
 	obj->type = objectType;
 	obj->next = root;
 	root = obj;
@@ -77,8 +80,23 @@ void vm::gc()
 void vm::del(size_t index)
 {
 	require(index >= 0 && index < STACK_MAX, std::string("error index"));
-	stack[index] = nullptr;
-	currentNumOfObjects--;
+	deleteObj(stack[index]);
+}
+
+void vm::deleteObj(std::shared_ptr<Object>& obj)
+{
+	if (obj == nullptr)
+	{
+		return;
+	}
+	obj->count--;
+	if (obj->count == 0)
+	{
+		deleteObj(obj->head);
+		deleteObj(obj->tail);
+		obj = nullptr;
+		currentNumOfObjects--;
+	}
 }
 
 void vm::require(bool cond, const std::string& message)
@@ -107,3 +125,4 @@ void vm::mark(const std::shared_ptr<Object>& obj)
 		mark(obj->tail);
 	}
 }
+

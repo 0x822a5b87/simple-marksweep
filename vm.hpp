@@ -29,7 +29,7 @@ public:
 
 	std::shared_ptr<Object> pushPrimitive(int value);
 
-	std::shared_ptr<Object> pushPair(std::shared_ptr<Object> tail, std::shared_ptr<Object> head);
+	std::shared_ptr<Object> pushPair(const std::shared_ptr<Object>& tail, const std::shared_ptr<Object>& head);
 
 	/**
 	 * delete object which represent the object should be collect
@@ -37,6 +37,8 @@ public:
 	 * @return
 	 */
 	void del(size_t index);
+
+	void deleteObj(std::shared_ptr<Object>& obj);
 
 	std::shared_ptr<Object> newObject(ObjectType objectType);
 
