@@ -37,3 +37,4 @@ cmake-build-debug/
 Makefile
 cmake_install.cmake
 simple-mark-sweep.cbp
+simple-mark-sweep

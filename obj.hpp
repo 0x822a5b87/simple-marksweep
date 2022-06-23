@@ -7,27 +7,34 @@
 
 typedef int primitive;
 
-enum class ObjectType;
+// as a considering of simplify, We only declared two kinds of objects
+enum class ObjectType
+{
+	PRIMITIVE,
+	REFERENCE
+};
+
 
 class Object
 {
 public:
-	ObjectType type;
-	bool       marked;
-	Object     *next;
-
-	union
-	{
-		int value;
-
-		struct
-		{
-			Object *head;
-			Object *tail;
-		};
-	};
 
 	static void printObject(Object *object);
+
+	virtual ~Object();
+
+	ObjectType              type;
+	bool                    marked;
+	std::shared_ptr<Object> next;
+
+	int value;
+
+	struct
+	{
+		std::shared_ptr<Object> head;
+		std::shared_ptr<Object> tail;
+	};
+
 };
 
 

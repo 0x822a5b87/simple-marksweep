@@ -5,13 +5,6 @@
 #include <iostream>
 #include "obj.hpp"
 
-// as a considering of simplify, We only declared two kinds of objects
-enum class ObjectType
-{
-	PRIMITIVE,
-	REFERENCE
-};
-
 
 void Object::printObject(Object *object)
 {
@@ -22,10 +15,15 @@ void Object::printObject(Object *object)
 			break;
 		case ObjectType::REFERENCE:
 			std::cout << "(";
-			Object::printObject(object->head);
+			Object::printObject(object->head.get());
 			std::cout << ", ";
-			Object::printObject(object->tail);
+			Object::printObject(object->tail.get());
 			std::cout << ")";
 			break;
 	}
+}
+
+Object::~Object()
+{
+	std::cout << "destroy object value : " << value << std::endl;
 }

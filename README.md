@@ -32,9 +32,10 @@ and now we know that we need all variable in `Object`:
 
 so we need variables and functions listed below:
 
-- `first Object` The first object in the linked list of all objects on the heap. everytime we allocate a new object, `newObject->next` point to firstObject and then we modify the firstObject point to new Object. thus we can traverse all objects in the stack.
+- `root` The **root object** in the linked list of all objects on the heap. everytime we allocate a new object, `newObject->next` point to firstObject and then we modify the firstObject point to new Object. thus we can traverse all objects in the stack.
+- `sp` stack pointer
 - `numOfObject` the current object count in stack
-- `maxNumOfObject` when numOfObjects >= maxNumOfObject we trigger the GC, **pay attention, we need to add or sub maxNumOfObject when appopriate.** otherwise the GC will triggered by every newObject or not triggered until the stack is expand too big.
+- `triggerGcNumOfObjects` when numOfObjects >= maxNumOfObject we trigger the GC, **pay attention, we need to add or sub maxNumOfObject when appopriate.** otherwise the GC will triggered by every newObject or not triggered until the stack is expand too big.
 - `object array` represent the stack.
 - `mayTriggerGC` trigger GC if it is a appropriate timing.
 - `push` simulate allocate object
@@ -44,7 +45,7 @@ so we need variables and functions listed below:
 - `sweep` sweep object not marked
 - `gc` stop the world and running GC
 - `newObject` create a object
-- `pushInt` create a object represent a PRIMITIVE and push it into stack
+- `pushPrimitive` create a object represent a PRIMITIVE and push it into stack
 - `pushReference` create a pair represent a REFERENCE and push it into stack
 
 
