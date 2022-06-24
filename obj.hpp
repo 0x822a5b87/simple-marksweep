@@ -19,7 +19,7 @@ class Object
 {
 public:
 
-	static void printObject(Object *object);
+	static std::string printObject(Object *object);
 
 	virtual ~Object();
 

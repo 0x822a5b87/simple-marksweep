@@ -25,7 +25,7 @@ vm::vm()
 std::shared_ptr<Object> vm::push(std::shared_ptr<Object> obj)
 {
 	require(this->sp < STACK_MAX, std::string("stack overflow"));
-	this->stack[this->sp++] = std::move(obj);
+	stack[sp++] = std::move(obj);
 	return this->stack[this->sp - 1];
 }
 
@@ -68,13 +68,9 @@ std::shared_ptr<Object> vm::newObject(ObjectType objectType)
 
 void vm::gc()
 {
-	for (size_t i = 0; i < sp; ++i)
-	{
-		if (stack[i] != nullptr)
-		{
-			mark(stack[i]);
-		}
-	}
+	markAll();
+	clearList();
+	compact();
 }
 
 void vm::del(size_t index)
@@ -94,8 +90,8 @@ void vm::deleteObj(std::shared_ptr<Object>& obj)
 	{
 		deleteObj(obj->head);
 		deleteObj(obj->tail);
-		obj = nullptr;
 		currentNumOfObjects--;
+		obj.reset();
 	}
 }
 
@@ -105,6 +101,17 @@ void vm::require(bool cond, const std::string& message)
 	{
 		std::cout << message << std::endl;
 		std::exit(0);
+	}
+}
+
+void vm::markAll()
+{
+	for (size_t i = 0; i < sp; ++i)
+	{
+		if (stack[i] != nullptr)
+		{
+			mark(stack[i]);
+		}
 	}
 }
 
@@ -124,5 +131,37 @@ void vm::mark(const std::shared_ptr<Object>& obj)
 		mark(obj->head);
 		mark(obj->tail);
 	}
+}
+
+void vm::clearList() const
+{
+	for (auto ptr = root; ptr != nullptr; ptr = ptr->next)
+	{
+		auto next = ptr->next;
+		while (next != nullptr && next->count == 0)
+		{
+			next = next->next;
+		}
+		ptr->next = next;
+	}
+}
+
+void vm::compact()
+{
+	int prevSp = sp;
+	size_t currentPos = 0;
+	for (size_t livePos = 0; livePos < sp; livePos++)
+	{
+		if (stack[livePos] != nullptr && stack[livePos]->count != 0)
+		{
+			stack[currentPos++] = stack[livePos];
+		}
+	}
+	for (size_t collectPos = currentPos; collectPos < sp; collectPos++)
+	{
+		stack[collectPos].reset();
+	}
+	sp = currentPos;
+	std::cout << "before compact : " << prevSp << ", after compact : " << sp  << std::endl;
 }
 

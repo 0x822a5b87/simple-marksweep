@@ -44,9 +44,23 @@ public:
 
 	void gc();
 
+	void markAll();
+
 	void mark(const std::shared_ptr<Object>&);
 
+	void sweep();
+
 	static void require(bool, const std::string&);
+
+private:
+	/**
+	 * clear the list
+	 */
+	void clearList() const;
+	/**
+	 * compact list
+	 */
+	void compact();
 };
 
 
